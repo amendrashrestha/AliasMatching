@@ -23,7 +23,8 @@ def main():
         # get tfidf
         sklearn_tfidf = TfidfVectorizer(norm='l2', tokenizer=TweetTokenizer().tokenize, sublinear_tf=True, min_df=mindf, max_df=maxdf)
         sklearn_representation = sklearn_tfidf.fit_transform(text)
-        print(sklearn_representation)
+        feature_names = sklearn_tfidf.get_feature_names()
+        print(feature_names)
         print("---------------------------")
 
     StyloFeatures(text)
