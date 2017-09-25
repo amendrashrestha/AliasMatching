@@ -16,8 +16,8 @@ class StyloFeatures():
     def __init__(self, text):
         self.transform(text)
 
-    def transform(self, X):
-        print(X)
+    def transform(self, text):
+        # print(X)
         lengths = [str(x) for x in list(range(1, 21))]
         symbols = list('.?!,;:()"-\'')
         smileys = [':\')', ':-)', ';-)', ':P', ':D', ':X', '<3', ':)', ';)', ':@', ':*', ':j', ':$', '%)']
@@ -36,12 +36,12 @@ class StyloFeatures():
                 functions[i] = '\\b' + functions[i] + '\\b'
 
         features = lengths + symbols + smileys + functions
-        vector = np.zeros((len(X), len(features)))
+        vector = np.zeros((len(text), len(features)))
 
         row = 0
         col = 0
 
-        for x in X:
+        for x in text:
             x_only_words = []
             for t in x:
                 if (len(t) == 1 and t.isalpha()) or \
@@ -56,10 +56,6 @@ class StyloFeatures():
                         vector[row][col] = counts.get(int(feat))
                     else:
                         vector[row][col] = 0
-
-                # Count alphabetic characters
-                elif col < len(lengths) :
-                    vector[row][col] = " ".join(x).lower().count(feat)
 
                 # Count special symbols
                 elif col < len(lengths) + len(symbols):
@@ -78,6 +74,6 @@ class StyloFeatures():
                     break
                 col += 1
             row += 1
-        # print(vector)
+        print(vector)
 
         return vector
