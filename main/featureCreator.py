@@ -4,6 +4,8 @@ import os
 import numpy as np
 from nltk.tokenize import TweetTokenizer
 
+import utilities.IOReadWrite as utilities
+
 class TokenizerTransformer():
     def __init__(self, text):
         self.transform(text)
@@ -18,30 +20,24 @@ class StyloFeatures():
 
     def transform(self, text):
         # print(X)
+        feature_vector_filepath = os.path.expanduser('~') + "/Downloads/PAN-15/feature_vector.csv"
         lengths = [str(x) for x in list(range(1, 21))]
         symbols = list('.?!,;:()"-\'')
         smileys = [':\')', ':-)', ';-)', ':P', ':D', ':X', '<3', ':)', ';)', ':@', ':*', ':j', ':$', '%)']
-        with open(os.environ['HOME'] + '/PycharmProjects/AliasMatching/dictionaries/Function', 'r') as f:
-            functions = [x.strip() for x in f.readlines()]
+        functions = utilities.get_function_words()
+        tdidf = utilities.get_tfidf_words()
 
-        for i in range(0, len(functions)):
-            if len(re.findall('\(', functions[i])) == 1 and len(re.findall('\)', functions[i])) == 0:
-                functions[i] = functions[i].replace('(', '\(')
-            elif len(re.findall('\(', functions[i])) == 0 and len(re.findall('\)', functions[i])) == 1:
-                functions[i] = functions[i].replace(')', '\)')
-            if functions[i].endswith('*'):
-                functions[i] = functions[i].replace('*', '\\w*')
-                functions[i] = '\\b' + functions[i]
-            else:
-                functions[i] = '\\b' + functions[i] + '\\b'
-
-        features = lengths + symbols + smileys + functions
+        features = lengths + symbols + smileys + functions + tdidf
         vector = np.zeros((len(text), len(features)))
 
         row = 0
         col = 0
 
         for x in text:
+            text_size = len(x.split())
+            x_wo_stopword = utilities.remove_stopword_from_text(x)
+            text_size_wo_stopword = len(x_wo_stopword.split())
+
             x_only_words = []
             for t in x:
                 if (len(t) == 1 and t.isalpha()) or \
@@ -49,6 +45,7 @@ class StyloFeatures():
                     x_only_words.append(t)
 
             counts = nltk.FreqDist([len(tok) for tok in x_only_words])
+
             for feat in features:
                 # Count word lengths
                 if col < len(lengths):
@@ -59,15 +56,21 @@ class StyloFeatures():
 
                 # Count special symbols
                 elif col < len(lengths) + len(symbols):
-                    vector[row][col] = x.count(feat)
+                    vector[row][col] = x.count(feat)/text_size
 
                 # Count smileys
                 elif col < len(lengths) + len(symbols) + len(smileys):
-                    vector[row][col] = x.count(feat)
+                    vector[row][col] = x.count(feat)/text_size
 
                 # Count functions words
                 elif col < len(lengths) + len(symbols) + len(smileys) + len(functions):
-                    vector[row][col] = len(re.findall(feat, " ".join(x).lower()))
+                    vector[row][col] = sum(1 for i in re.finditer(feat, x))/text_size
+
+                # Count tfidf
+                elif col < len(lengths) + len(symbols) + len(smileys) + len(functions) + len(tdidf):
+                    vector[row][col] = sum(1 for i in re.finditer(feat, x_wo_stopword))/text_size_wo_stopword
+                    # print(feat)
+                    print(sum(1 for i in re.finditer(feat, x_wo_stopword)))
 
                 if col == len(features) - 1:
                     col = 0
@@ -75,5 +78,6 @@ class StyloFeatures():
                 col += 1
             row += 1
         print(vector)
+        np.savetxt(feature_vector_filepath, vector, delimiter=",")
 
-        return vector
+        # return vector
