@@ -31,8 +31,8 @@ class StyloFeatures():
         corpus = utilities.return_corpus()
         userlist = utilities.get_userlist()
 
-        user_id = ['user_id']
-        lengths = []
+        user_id = ['User_ID']
+        lengths = ['Text_length']
         word_lengths = [str(x) for x in list(range(1, 21))]
         digits = [str(x) for x in list(range(0, 10))]
         symbols = list('.?!,;:()"-\'')
@@ -42,7 +42,7 @@ class StyloFeatures():
         ngram_char = utilities.get_wordlist(ngram_char_filepath)
         # LIWC = utilities.get_wordlist(LIWC_filepath)
 
-        features = word_lengths + digits + symbols + smileys + functions + tfidf + ngram_char + user_id
+        features = lengths + word_lengths + digits + symbols + smileys + functions + tfidf + ngram_char + user_id
         vector = np.zeros((len(corpus), len(features)))
 
         utilities.create_file_with_header(feature_vector_filepath, features)
@@ -51,69 +51,73 @@ class StyloFeatures():
         row = 0
         col = 0
 
-        # for x in corpus:
-        x = "this is test"
+        for x in corpus:
+        # x = "this is this test"
         # print(userlist[row])
-        text_size = len(x.split())
-        x_wo_stopword = utilities.remove_stopword_from_text(x)
-        text_size_wo_stopword = len(x_wo_stopword.split())
+            text_size = len(x.split())
+            x_wo_stopword = utilities.remove_stopword_from_text(x)
+            text_size_wo_stopword = len(x_wo_stopword.split())
 
+            x_only_words = []
+            for t in x.split():
+                if (len(t) == 1 and t.isalpha()) or \
+                        (len(t) > 1 and ("http" not in t and "www" not in t and "@" not in t and "#" not in t)):
+                    x_only_words.append(t)
+            # print(x_only_words)
+            counts = nltk.FreqDist([len(tok) for tok in x_only_words])
 
-
-        x_only_words = []
-        for t in x:
-            if (len(t) == 1 and t.isalpha()) or \
-                    (len(t) > 1 and ("http" not in t and "www" not in t and "@" not in t and "#" not in t)):
-                x_only_words.append(t)
-        # print(x_only_words)
-        counts = nltk.FreqDist([len(tok) for tok in x_only_words])
-
-        for feat in features:
-            # print(feat)
-            # Count word lengths
-            if col < len(lengths):
-                if int(feat) in counts.keys():
-                    print(counts.get(int(feat)))
-                    vector[row][col] = counts.get(int(feat))
-                else:
-                    vector[row][col] = 0
-
-            # Count special symbols
-            elif col < len(lengths) + len(digits):
-                vector[row][col] = x.count(feat) / text_size
-
-            # Count special symbols
-            elif col < len(lengths) + len(digits) + len(symbols):
-                vector[row][col] = x.count(feat) / text_size
-
-            # Count smileys
-            elif col < len(lengths) + len(digits) + len(symbols) + len(smileys):
-                vector[row][col] = x.count(feat) / text_size
-
-            # Count functions words
-            elif col < len(lengths) + len(digits) + len(symbols) + len(smileys) + len(functions):
-                vector[row][col] = sum(1 for i in re.finditer(feat, x)) / text_size
-
-            # Count tfidf without stop words
-            elif col < len(lengths) + len(digits) + len(symbols) + len(smileys) + len(functions) + len(tfidf):
-                vector[row][col] = sum(1 for i in re.finditer(feat, x_wo_stopword)) / text_size_wo_stopword
+            for feat in features:
                 # print(feat)
-                # print(sum(1 for i in re.finditer(feat, x_wo_stopword)))
+                # Count text lengths
+                if col < len(lengths):
+                    vector[row][col] = len(x)
 
-            # Count ngram_char without stop words
-            elif col < len(lengths) + len(digits) + len(symbols) + len(smileys) + len(functions) + len(tfidf) + len(ngram_char):
-                vector[row][col] = sum(1 for i in re.finditer(feat, x_wo_stopword)) / text_size_wo_stopword
+                #Count word lengths
+                elif col < len(lengths) + len(word_lengths):
+                    if int(feat) in counts.keys():
+                        vector[row][col] = counts.get(int(feat))
+                    else:
+                        vector[row][col] = 0
 
-            # Adding userId
-            elif col < len(lengths) + len(digits) + len(symbols) + len(smileys) + len(functions) + len(tfidf) + len(
-                    ngram_char) + len(user_id):
-                vector[row][col] = userlist[row]
+                # Count special symbols
+                elif col < len(lengths) + len(word_lengths) + len(digits):
+                    vector[row][col] = x.count(feat) / text_size
 
-            if col == len(features) - 1:
-                col = 0
-                break
-            col += 1
+                # Count special symbols
+                elif col < len(lengths) + len(word_lengths) + len(digits) + len(symbols):
+                    vector[row][col] = x.count(feat) / text_size
 
-        row += 1
-        # with open(feature_vector_filepath, 'ab') as f_handle:
-        #     np.savetxt(f_handle, vector, delimiter=",")
+                # Count smileys
+                elif col < len(lengths) + len(word_lengths) + len(digits) + len(symbols) + len(smileys):
+                    vector[row][col] = x.count(feat) / text_size
+
+                # Count functions words
+                elif col < len(lengths) + len(word_lengths) + len(digits) + len(symbols) + len(smileys) + len(functions):
+                    vector[row][col] = sum(1 for i in re.finditer(feat, x)) / text_size
+                #
+                # # Count tfidf without stop words
+                elif col < len(lengths) + len(word_lengths) + len(digits) + len(symbols) + len(smileys) + len(
+                        functions) + len(tfidf):
+                    vector[row][col] = sum(1 for i in re.finditer(feat, x_wo_stopword)) / text_size_wo_stopword
+                # # print(feat)
+                #     # print(sum(1 for i in re.finditer(feat, x_wo_stopword)))
+                #
+                # # Count ngram_char without stop words
+                elif col < len(lengths) + len(word_lengths) + len(digits) + len(symbols) + len(smileys) + len(
+                        functions) + len(tfidf) + len(ngram_char):
+                    vector[row][col] = sum(1 for i in re.finditer(feat, x_wo_stopword)) / text_size_wo_stopword
+                #
+                # # Adding userId
+                elif col < len(lengths) + len(word_lengths) + len(digits) + len(symbols) + len(smileys) + len(
+                        functions) + len(tfidf) + len(
+                        ngram_char) + len(user_id):
+                    vector[row][col] = userlist[row]
+
+                if col == len(features) - 1:
+                    col = 0
+                    break
+                col += 1
+
+            row += 1
+        with open(feature_vector_filepath, 'ab') as f_handle:
+            np.savetxt(f_handle, vector, delimiter=",")

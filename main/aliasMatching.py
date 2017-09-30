@@ -10,10 +10,10 @@ def main():
 
     utilities.create_tfIdf(top_word_size)
     utilities.create_ngram_chars(top_word_size, char_size)
-    utilities.pos_tagger()
+    # utilities.pos_tagger()
 
 
-    # StyloFeatures()
+    StyloFeatures()
 
 
 if __name__ == '__main__':
