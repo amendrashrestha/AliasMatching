@@ -12,7 +12,6 @@ import nltk
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-
 document_path = os.path.expanduser('~') + "/Downloads/PAN-15-Test/"
 tfidf_filepath = os.path.expanduser('~') + "/repo/AliasMatching/dictionaries/TfIdf"
 ngram_filepath = os.path.expanduser('~') + "/repo/AliasMatching/dictionaries/Ngram_char"
@@ -35,7 +34,7 @@ def create_tfIdf(N):
         scores = zip(vectorizer.get_feature_names(),
                      np.asarray(tfidf_result.sum(axis=0)).ravel())
         sorted_scores = sorted(scores, key=lambda x: x[1], reverse=True)
-        for item in sorted_scores[1:(N+1)]:
+        for item in sorted_scores[1:(N + 1)]:
             write_text(str(item[0]), tfidf_filepath)
             # print("{0:80} Score: {1}".format(item[0], item[1]))
 
@@ -44,6 +43,7 @@ def read_text_file(filepath):
     with open(filepath) as content:
         user_text = content.read().replace('\n', ' ')
         return user_text
+
 
 def read_text_file_wo_new_line(filepath):
     with open(filepath) as content:
@@ -63,6 +63,14 @@ def create_file_with_header(filepath, features):
         features = features.replace("\\b", "").replace("\w", "")
         outcsv.write(features)
         outcsv.write("\n")
+
+
+def create_ngram_header(ngrams):
+    ngram_feat = []
+    for feat in ngrams:
+        feat_new = feat.replace(",", "_comma")
+        ngram_feat.append(feat_new)
+    return ngram_feat
 
 
 def return_corpus():
