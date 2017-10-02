@@ -7,14 +7,13 @@ from pathlib import Path
 
 from nltk import FreqDist
 from nltk import word_tokenize, pos_tag
-
 import nltk
 import numpy as np
+
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-document_path = os.path.expanduser('~') + "/Downloads/PAN-15-Test/"
-tfidf_filepath = os.path.expanduser('~') + "/repo/AliasMatching/dictionaries/TfIdf"
-ngram_filepath = os.path.expanduser('~') + "/repo/AliasMatching/dictionaries/Ngram_char"
+import utilities.IOProperties as prop
+
 
 
 def get_document_filenames(document_path):
@@ -23,19 +22,19 @@ def get_document_filenames(document_path):
 
 
 def create_tfIdf(N):
-    if not Path(tfidf_filepath).exists():
+    if not Path(prop.tfidf_filepath).exists():
         print("Creating tfIdf file .... \n")
         vectorizer = TfidfVectorizer(input='filename', analyzer='word', ngram_range=(1, 3), min_df=2, max_df=5,
                                      stop_words='english',
                                      smooth_idf=True,  # prevents zero division for unseen words
                                      sublinear_tf=False)
-        tfidf_result = vectorizer.fit_transform(get_document_filenames(document_path))
+        tfidf_result = vectorizer.fit_transform(get_document_filenames(prop.document_path))
 
         scores = zip(vectorizer.get_feature_names(),
                      np.asarray(tfidf_result.sum(axis=0)).ravel())
         sorted_scores = sorted(scores, key=lambda x: x[1], reverse=True)
         for item in sorted_scores[1:(N + 1)]:
-            write_text(str(item[0]), tfidf_filepath)
+            write_text(str(item[0]), prop.tfidf_filepath)
             # print("{0:80} Score: {1}".format(item[0], item[1]))
 
 
@@ -75,7 +74,7 @@ def create_ngram_header(ngrams):
 
 def return_corpus():
     corpus = []
-    files = get_document_filenames(document_path)
+    files = get_document_filenames(prop.document_path)
     for single_file in files:
         user_text = read_text_file(single_file)
         corpus.append(user_text)
@@ -84,7 +83,7 @@ def return_corpus():
 
 def return_corpus_wo_stopwords():
     corpus = []
-    files = get_document_filenames(document_path)
+    files = get_document_filenames(prop.document_path)
     for single_file in files:
         user_text = remove_stopword_from_text(read_text_file(single_file).lower())
         corpus.append(user_text)
@@ -93,10 +92,10 @@ def return_corpus_wo_stopwords():
 
 def get_userlist():
     userlist = []
-    files = get_document_filenames(document_path)
+    files = get_document_filenames(prop.document_path)
 
     for single_user in files:
-        userlist.append(single_user.split("/")[5].replace("EN", ""))
+        userlist.append(single_user.split("/")[-2].replace("EN", ""))
     return userlist
 
 
@@ -126,7 +125,7 @@ def get_wordlist(filepath):
     return tfidf
 
 def get_LIWC_files(document_path):
-    files = [file for file in glob.glob(document_path + '/*', recursive=True)]
+    files = sorted([file for file in glob.glob(document_path + '/*', recursive=True)])
     return files
 
 def count_LIWC(filepath):
@@ -175,7 +174,7 @@ def ngrams(N, word, strict=True):
 
 def create_ngram_chars(M, N):
     """gets the top M most common substrings of N characters in English words"""
-    if not Path(ngram_filepath).exists():
+    if not Path(prop.ngram_filepath).exists():
         print("Creating character ngram file .... \n")
         corpus = return_corpus_wo_stopwords()
         n_grams = []
@@ -186,7 +185,7 @@ def create_ngram_chars(M, N):
 
         f = FreqDist(n_grams)
         for i in range(0, len(f.most_common(M))):
-            write_text(f.most_common(M)[i][0], ngram_filepath)
+            write_text(f.most_common(M)[i][0], prop.ngram_filepath)
             # print(f.most_common(M)[i][0])
 
 
