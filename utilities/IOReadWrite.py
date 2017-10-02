@@ -13,8 +13,8 @@ import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 document_path = os.path.expanduser('~') + "/Downloads/PAN-15-Test/"
-tfidf_filepath = os.path.expanduser('~') + "/repo/AliasMatching/dictionaries/TfIdf"
-ngram_filepath = os.path.expanduser('~') + "/repo/AliasMatching/dictionaries/Ngram_char"
+tfidf_filepath = os.path.expanduser('~') + "/PycharmProjects/AliasMatching/dictionaries/TfIdf"
+ngram_filepath = os.path.expanduser('~') + "/PycharmProjects/AliasMatching/dictionaries/Ngram_char"
 
 
 def get_document_filenames(document_path):
@@ -100,8 +100,8 @@ def get_userlist():
     return userlist
 
 
-def get_function_words():
-    with open(os.environ['HOME'] + '/repo/AliasMatching/dictionaries/Function', 'r') as f:
+def get_function_words(filepath):
+    with open(filepath, 'r') as f:
         functions = [x.strip() for x in f.readlines()]
 
         for i in range(0, len(functions)):
@@ -124,6 +124,15 @@ def get_wordlist(filepath):
         for i in range(0, len(tfidf)):
             tfidf[i] = '\\b' + tfidf[i] + '\\b'
     return tfidf
+
+def get_LIWC_files(document_path):
+    files = [file for file in glob.glob(document_path + '/*', recursive=True)]
+    return files
+
+def count_LIWC(filepath):
+    LIWC_words = read_text_file(filepath)
+    return LIWC_words
+    # print(LIWC_words)
 
 
 def get_most_freq_word(text):
