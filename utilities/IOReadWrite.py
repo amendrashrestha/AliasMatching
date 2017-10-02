@@ -13,8 +13,8 @@ import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 document_path = os.path.expanduser('~') + "/Downloads/PAN-15-Test/"
-tfidf_filepath = os.path.expanduser('~') + "/PycharmProjects/AliasMatching/dictionaries/TfIdf"
-ngram_filepath = os.path.expanduser('~') + "/PycharmProjects/AliasMatching/dictionaries/Ngram_char"
+tfidf_filepath = os.path.expanduser('~') + "/repo/AliasMatching/dictionaries/TfIdf"
+ngram_filepath = os.path.expanduser('~') + "/repo/AliasMatching/dictionaries/Ngram_char"
 
 
 def get_document_filenames(document_path):

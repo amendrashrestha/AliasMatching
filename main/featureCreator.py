@@ -24,10 +24,10 @@ class StyloFeatures():
     def transform(self):
         print("Creating Stylometric features ..... \n")
         feature_vector_filepath = os.path.expanduser('~') + "/Downloads/PAN-15-Test/feature_vector.csv"
-        function_word_filepath = os.environ['HOME'] + '/PycharmProjects/AliasMatching/dictionaries/Function'
-        tfidf_filepath = os.environ['HOME'] + '/PycharmProjects/AliasMatching/dictionaries/TfIdf'
-        ngram_char_filepath = os.environ['HOME'] + '/PycharmProjects/AliasMatching/dictionaries/Ngram_char'
-        LIWC_filepath = os.environ['HOME'] + '/PycharmProjects/AliasMatching/LIWC/'
+        function_word_filepath = os.environ['HOME'] + '/repo/AliasMatching/dictionaries/Function'
+        tfidf_filepath = os.environ['HOME'] + '/repo/AliasMatching/dictionaries/TfIdf'
+        ngram_char_filepath = os.environ['HOME'] + '/repo/AliasMatching/dictionaries/Ngram_char'
+        LIWC_filepath = os.environ['HOME'] + '/repo/AliasMatching/LIWC/'
 
         corpus = utilities.return_corpus()
         userlist = utilities.get_userlist()
@@ -66,7 +66,7 @@ class StyloFeatures():
         col = 0
 
         for x in corpus:
-            x = "this about challeng hopefully is abnormal this ability able abilit test"
+            # x = "this about challeng hopefully is abnormal this ability able abilit test"
             # print(userlist[row])
             text_size = len(x.split())
             x_wo_stopword = utilities.remove_stopword_from_text(x)
@@ -80,15 +80,15 @@ class StyloFeatures():
             # print(x_only_words)
             counts = nltk.FreqDist([len(tok) for tok in x_only_words])
 
-            for i in range(0, len(LIWC_files)):
-                LIWC_Category = LIWC_files[i].split("/")[-1]
-                LIWC_words = utilities.get_function_words(LIWC_files[i])
-                count = 0
-
-                for feat in LIWC_words:
-                    count += sum(1 for i in re.finditer(feat, x))
-                avg_count = count / text_size
-                print(avg_count)
+            # for i in range(0, len(LIWC_files)):
+            #     LIWC_Category = LIWC_files[i].split("/")[-1]
+            #     LIWC_words = utilities.get_function_words(LIWC_files[i])
+            #     count = 0
+            #
+            #     for feat in LIWC_words:
+            #         count += sum(1 for i in re.finditer(feat, x))
+            #     avg_count = count / text_size
+            #     print(avg_count)
 
 
             for feat in features:
