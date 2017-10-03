@@ -200,23 +200,24 @@ def ngrams_words():
 
 
 def pos_tagger():
-    filepath = os.path.expanduser('~') + "/Desktop/Stormfront_Women.txt"
-    noun_filepath = os.path.expanduser('~') + "/Desktop/Stormfront_Women_Noun.txt"
-    adj_filepath = os.path.expanduser('~') + "/Desktop/Stormfront_Women_Adjective.txt"
+    print("Creating POS tagging .... ")
+    filepath = os.path.expanduser('~') + "/Desktop/Stormfront.txt"
+    noun_filepath = os.path.expanduser('~') + "/Desktop/Stormfront_Ideology_Verb.txt"
+    # adj_filepath = os.path.expanduser('~') + "/Desktop/Stormfront_Women_Adjective.txt"
     sentences = read_text_file_wo_new_line(filepath)
 
     nouns_all = []
     adjectives_all = []
 
     for sentence in sentences:
-        nouns = [token for token, pos in pos_tag(word_tokenize(sentence)) if pos.startswith('N')]
-        adjs = [token for token, pos in pos_tag(word_tokenize(sentence)) if pos.startswith('J')]
+        nouns = [token for token, pos in pos_tag(word_tokenize(sentence)) if pos.startswith('V')]
+        # adjs = [token for token, pos in pos_tag(word_tokenize(sentence)) if pos.startswith('J')]
 
         for noun in nouns:
             nouns_all.append(noun)
 
-        for adj in adjs:
-            adjectives_all.append(adj)
+        # for adj in adjs:
+        #     adjectives_all.append(adj)
 
     noun_count = nltk.FreqDist(nouns_all)
     most_common_noun = noun_count.most_common(205)
@@ -226,10 +227,10 @@ def pos_tagger():
         # print(most_common_noun[i][0])
     print("-------------")
 
-    adj_count = nltk.FreqDist(adjectives_all)
-    most_common_adj = adj_count.most_common(205)
+    # adj_count = nltk.FreqDist(adjectives_all)
+    # most_common_adj = adj_count.most_common(205)
 
-    for i in range(0, len(most_common_adj)):
-        write_text(most_common_adj[i][0], adj_filepath)
+    # for i in range(0, len(most_common_adj)):
+    #     write_text(most_common_adj[i][0], adj_filepath)
         # print(most_common_adj[i][0])
     print("****************")

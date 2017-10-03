@@ -25,7 +25,6 @@ class StyloFeatures():
     def transform(self):
         print("Creating Stylometric features ..... \n")
 
-
         corpus = utilities.return_corpus()
         userlist = utilities.get_userlist()
 
@@ -41,7 +40,6 @@ class StyloFeatures():
 
         LIWC_header = sorted(os.listdir(props.LIWC_filepath))
 
-
         digits_header = ['Digit_0', 'Digit_1', 'Digit_2', 'Digit_3', 'Digit_4', 'Digit_5', 'Digit_6', 'Digit_7',
                          'Digit_8', 'Digit_9']
         symbols_header = ['dot', 'question_mark', 'exclamation', 'comma', 'semi_colon', 'colon', 'left_bracket',
@@ -50,10 +48,11 @@ class StyloFeatures():
                           'smily_9', 'smily_10', 'smily_11', 'smily_12', 'smily_13', 'smily_14']
         ngaram_char_header = utilities.create_ngram_header(ngram_char)
 
-        header_feature = LIWC_header + lengths + word_lengths + digits_header + symbols_header + smilies_header + functions + tfidf + \
-                         ngaram_char_header + user_id
+        header_feature = LIWC_header + lengths + word_lengths + digits_header + symbols_header + smilies_header + \
+                         functions + tfidf + ngaram_char_header + user_id
 
-        features = LIWC_header + lengths + word_lengths + digits + symbols + smileys + functions + tfidf + ngram_char + user_id
+        features = LIWC_header + lengths + word_lengths + digits + symbols + smileys + functions + tfidf + \
+                   ngram_char + user_id
         vector = np.zeros((len(corpus), len(features)))
 
         utilities.create_file_with_header(props.feature_vector_filepath, header_feature)
@@ -97,7 +96,7 @@ class StyloFeatures():
                 # Count word lengths
                 elif col < len(LIWC_header) + len(lengths) + len(word_lengths):
                     if int(feat) in counts.keys():
-                        vector[row][col] = counts.get(int(feat))
+                        vector[row][col] = counts.get(int(feat)) / text_size
                     else:
                         vector[row][col] = 0
 
@@ -110,30 +109,35 @@ class StyloFeatures():
                     vector[row][col] = x.count(feat) / text_size
 
                 # Count smileys
-                elif col < len(LIWC_header) + len(lengths) + len(word_lengths) + len(digits) + len(symbols) + len(smileys):
+                elif col < len(LIWC_header) + len(lengths) + len(word_lengths) + len(digits) + len(symbols) + len(
+                        smileys):
                     vector[row][col] = x.count(feat) / text_size
 
                 # Count functions words
-                elif col < len(LIWC_header) + len(lengths) + len(word_lengths) + len(digits) + len(symbols) + len(smileys) + len(
+                elif col < len(LIWC_header) + len(lengths) + len(word_lengths) + len(digits) + len(symbols) + len(
+                        smileys) + len(
                         functions):
                     vector[row][col] = sum(1 for i in re.finditer(feat, x)) / text_size
                 #
                 # # Count tfidf without stop words
-                elif col < len(LIWC_header) + len(lengths) + len(word_lengths) + len(digits) + len(symbols) + len(smileys) + len(
+                elif col < len(LIWC_header) + len(lengths) + len(word_lengths) + len(digits) + len(symbols) + len(
+                        smileys) + len(
                         functions) + len(tfidf):
                     vector[row][col] = sum(1 for i in re.finditer(feat, x_wo_stopword)) / text_size_wo_stopword
                 # # print(feat)
-                #     # print(sum(1 for i in re.finditer(feat, x_wo_stopword)))
+                # # print(sum(1 for i in re.finditer(feat, x_wo_stopword)))
                 #
                 # # Count ngram_char without stop words
-                elif col < len(LIWC_header) + len(lengths) + len(word_lengths) + len(digits) + len(symbols) + len(smileys) + len(
+                elif col < len(LIWC_header) + len(lengths) + len(word_lengths) + len(digits) + len(symbols) + len(
+                        smileys) + len(
                         functions) + len(tfidf) + len(ngram_char):
                     vector[row][col] = sum(1 for i in re.finditer(feat, x_wo_stopword)) / text_size_wo_stopword
                 #
                 # # Adding userId
-                elif col < len(LIWC_header) + len(lengths) + len(word_lengths) + len(digits) + len(symbols) + len(smileys) + len(
+                elif col < len(LIWC_header) + len(lengths) + len(word_lengths) + len(digits) + len(symbols) + len(
+                        smileys) + len(
                         functions) + len(tfidf) + len(
-                    ngram_char) + len(user_id):
+                        ngram_char) + len(user_id):
                     vector[row][col] = userlist[row]
 
                 if col == len(features) - 1:

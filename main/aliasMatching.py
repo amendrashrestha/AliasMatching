@@ -12,8 +12,7 @@ def main():
     utilities.create_ngram_chars(top_word_size, char_size)
     # utilities.pos_tagger()
 
-
-    StyloFeatures()
+    # StyloFeatures()
 
 
 if __name__ == '__main__':
