@@ -62,7 +62,7 @@ class StyloFeatures():
 
         for x in corpus:
             # x = "this about challeng hopefully is abnormal this ability able abilit test"
-            # print(userlist[row])
+            print(userlist[row])
             text_size = len(x.split())
             x_wo_stopword = utilities.remove_stopword_from_text(x)
             text_size_wo_stopword = len(x_wo_stopword.split())
@@ -131,6 +131,7 @@ class StyloFeatures():
                 elif col < len(LIWC_header) + len(lengths) + len(word_lengths) + len(digits) + len(symbols) + len(
                         smileys) + len(
                         functions) + len(tfidf) + len(ngram_char):
+                    print(feat)
                     vector[row][col] = sum(1 for i in re.finditer(feat, x_wo_stopword)) / text_size_wo_stopword
                 #
                 # # Adding userId

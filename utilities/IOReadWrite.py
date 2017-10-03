@@ -9,11 +9,9 @@ from nltk import FreqDist
 from nltk import word_tokenize, pos_tag
 import nltk
 import numpy as np
-
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 import utilities.IOProperties as prop
-
 
 
 def get_document_filenames(document_path):
@@ -32,9 +30,11 @@ def create_tfIdf(N):
 
         scores = zip(vectorizer.get_feature_names(),
                      np.asarray(tfidf_result.sum(axis=0)).ravel())
-        sorted_scores = sorted(scores, key=lambda x: x[1], reverse=True)
-        for item in sorted_scores[1:(N + 1)]:
+        for item in scores:
             write_text(str(item[0]), prop.tfidf_filepath)
+            # sorted_scores = sorted(scores, key=lambda x: x[1], reverse=True)
+            # for item in sorted_scores[1:(N + 1)]:
+            #     write_text(str(item[0]), prop.tfidf_filepath)
             # print("{0:80} Score: {1}".format(item[0], item[1]))
 
 
@@ -124,9 +124,11 @@ def get_wordlist(filepath):
             tfidf[i] = '\\b' + tfidf[i] + '\\b'
     return tfidf
 
+
 def get_LIWC_files(document_path):
     files = sorted([file for file in glob.glob(document_path + '/*', recursive=True)])
     return files
+
 
 def count_LIWC(filepath):
     LIWC_words = read_text_file(filepath)
@@ -184,6 +186,8 @@ def create_ngram_chars(M, N):
                 n_grams.append(ngram)
 
         f = FreqDist(n_grams)
+        # for i in f.keys():
+        #     write_text(i, prop.ngram_filepath)
         for i in range(0, len(f.most_common(M))):
             write_text(f.most_common(M)[i][0], prop.ngram_filepath)
             # print(f.most_common(M)[i][0])
@@ -216,8 +220,8 @@ def pos_tagger():
         for noun in nouns:
             nouns_all.append(noun)
 
-        # for adj in adjs:
-        #     adjectives_all.append(adj)
+            # for adj in adjs:
+            # adjectives_all.append(adj)
 
     noun_count = nltk.FreqDist(nouns_all)
     most_common_noun = noun_count.most_common(205)
@@ -231,6 +235,6 @@ def pos_tagger():
     # most_common_adj = adj_count.most_common(205)
 
     # for i in range(0, len(most_common_adj)):
-    #     write_text(most_common_adj[i][0], adj_filepath)
-        # print(most_common_adj[i][0])
+    # write_text(most_common_adj[i][0], adj_filepath)
+    # print(most_common_adj[i][0])
     print("****************")
